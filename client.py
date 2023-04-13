@@ -8,6 +8,7 @@ import threading
 fonty = ("Courier",11)
 TCP_PORT = 25565
 
+# Doing a graphical interface because extra credit. I don't want to make this in another language though.
 class BulletinClientApp(Tk):
     def __init__(self, master=None):
         Tk.__init__(self, master)
@@ -20,7 +21,8 @@ class BulletinClientApp(Tk):
         self.sender = None
         self.bound = False
         
-    def receiveData(self):
+    # This function runs continuously, waiting to receive data from the server. It will print messages to the output.
+    def receive_data(self):
         while True:
             try:
                 data = self.sender.recv(1024)
@@ -29,19 +31,20 @@ class BulletinClientApp(Tk):
             except Exception:
                 pass
 
-    def _create_socket(self):
-
+    # This creates the connection and makes receive_data run indefinitely.
+    def _create_socket(self, address: tuple(str, int)):
         if self.sender:
             self.sender.close()
             
         try:
-            self.sender = socket.create_connection((self.ipAddress.get(),TCP_PORT))
-            self.message("Connecting to {0}...".format(self.ipAddress.get()))
+            self.sender = socket.create_connection(address=address)
+            self.message("Connecting to {0}:{1}...".format(address[0], address[1]))
 
-            threading.Thread(target=self.receiveData).start()            
+            threading.Thread(target=self.receive_data).start()            
         except Exception as e:
             self.message("Connection failed! " + repr(e))
-                    
+    
+    # This creates the actual graphical interface.
     def _create_widgets(self):
         self.chatBox = ScrolledText(self,
                 relief=GROOVE,font=fonty,state=DISABLED) #width=80,height=15)
@@ -55,9 +58,11 @@ class BulletinClientApp(Tk):
         self.sendBtn = ttk.Button(self, text="Send",command=self.enter_btn)
         self.sendBtn.place(width=80,height=30,x=520,y=375)
     
+    # I don't remember tkinter that well so this function exists since it's duct-taping the send button.
     def enter_btn(self):
         self.enter(None)
 
+    # This is the logic for input. When you press the send button, it takes whatever's in self.entryBox and tries to send it to the server.
     def enter(self, event):
         message = self.entry_text.get().strip()
         if message != "":
@@ -73,7 +78,8 @@ class BulletinClientApp(Tk):
 
             print(message)
             self.entryBox.delete(0,len(self.entryBox.get()))
-            
+    
+    # This sends incoming text to the output.
     def message(self,text):
         self.chatBox.config(state=NORMAL)
         self.chatBox.insert(INSERT,text + "\n")
