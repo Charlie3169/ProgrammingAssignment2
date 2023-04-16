@@ -32,15 +32,15 @@ class BulletinClientApp(Tk):
                 pass
 
     # This creates the connection and makes receive_data run indefinitely.
-    def _create_socket(self, address: tuple(str, int)):
+    def _create_socket(self, address: tuple[str, int]):
         if self.sender:
             self.sender.close()
             
         try:
-            self.sender = socket.create_connection(address=address)
             self.message("Connecting to {0}:{1}...".format(address[0], address[1]))
+            self.sender = socket.create_connection(address=address)
 
-            threading.Thread(target=self.receive_data).start()            
+            threading.Thread(target=self.receive_data).start()
         except Exception as e:
             self.message("Connection failed! " + repr(e))
     
@@ -65,14 +65,25 @@ class BulletinClientApp(Tk):
     # This is the logic for input. When you press the send button, it takes whatever's in self.entryBox and tries to send it to the server.
     def enter(self, event):
         message = self.entry_text.get().strip()
-        if message != "":
-            if not self.sender:
-                self.message("Error: You aren't connected!")
+        if message != "": # Don't send an empty string.
+            if not self.sender: # If the connection hasn't been made yet...
+                args = message.split(" ") # See if there's a command to parse.
+                if args[0] == "%connect": # If the command is to connect...
+                    address = "localhost" # Default connection args are localhost and the port constant.
+                    port = TCP_PORT
+
+                    if len(args) == 2: # But you can specify an IP and port.
+                        ip_parts = message.split(" ")[1].split(":")
+                        if len(ip_parts) == 2:
+                            port = int(ip_parts[1])
+                        address = ip_parts[0]
+
+                    self._create_socket(address=(address, port))
+                else: # Otherwise, tell the user that they aren't connected.
+                    self.message("Error: You aren't connected!")
                 return
-            
             try:
-                #print(bytes(text,'utf-8'))
-                self.sender.send(bytes(message,'utf-8'))
+                self.sender.send(bytes(message,'utf-8')) # Don't need a protocol, just make the server interpret commands.
             except:
                 self.message("Error: message failed to send!")
 
