@@ -22,15 +22,8 @@ class Group:
         self.current_messages: list[Message] = list()
         self.users: dict[socket.socket, str] = dict()
 
-    def add_user(self, name: str) -> None:
-        self.users.append(name)
-
-    def remove_user(self, name: str) -> None:
-        self.users.remove(name)
-
     def add_message(self, msg: Message) -> None:
         self.current_messages.append(msg)
-    
 
     pass
 

@@ -29,9 +29,12 @@ class BulletinServer:
 
                 self._process_command(client = conn, input=input_str)
                 # conn.sendall(bytes(output_str, 'utf-8'))
+            except OSError as e:
+                print("Connection closing...")
+                break
             except Exception as e:
                 print(repr(e))
-                raise e # For debugging, since this shows the stack trace at the cost of killing a connection.
+                #raise e # For debugging, since this shows the stack trace at the cost of killing a connection.
     
     def join(self, new_user: socket.socket, username: str):
         actual_username = username
@@ -71,6 +74,12 @@ class BulletinServer:
         msg: Message = self.group.current_messages[id]
 
         caller.sendall(bytes(msg))
+    
+    def exit(self, caller: socket.socket):
+        if caller in self.group.users.keys():
+            self.group.users.pop(caller)
+        
+        caller.close()
 
     def _process_command(self, client: socket.socket, input: str) -> None:
         if(input.startswith('%')):
@@ -90,9 +99,9 @@ class BulletinServer:
                 case 'leave':
                     self.leave(leaving_user=client)
                 case 'message':
-                    self.message(self, commands[1])
+                    self.message(caller=client, id=int(commands[1]))
                 case 'exit':
-                    self.exit(self)
+                    self.exit(caller=client)
                 case 'groups':
                     self.groups(self)
                 case 'groupjoin':

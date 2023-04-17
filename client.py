@@ -28,10 +28,15 @@ class BulletinClientApp(Tk):
                 data = self.sender.recv(1024)
                 if not data: break
                 self.displayMessage(str(data,'utf-8'))
-            except Exception:
+            except ConnectionResetError as e:
+                print(repr(e))
+                break
+            except Exception as e:
+                print(repr(e))
                 pass
         
         print("Connection closed...")
+        self.displayMessage("You have been disconnected!")
         self.sender.close()
         self.sender = None
 
