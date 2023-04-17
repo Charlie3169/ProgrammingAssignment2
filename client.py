@@ -30,6 +30,10 @@ class BulletinClientApp(Tk):
                 self.displayMessage(str(data,'utf-8'))
             except Exception:
                 pass
+        
+        print("Connection closed...")
+        self.sender.close()
+        self.sender = None
 
     # This creates the connection and makes receive_data run indefinitely.
     def _create_socket(self, address: tuple[str, int]):
@@ -84,8 +88,12 @@ class BulletinClientApp(Tk):
                 return
             try:
                 self.sender.send(bytes(message,'utf-8')) # Don't need a protocol, just make the server interpret commands.
-            except:
+            except ConnectionResetError as e:
+                self.sender = None
+                self.displayMessage("Error: You are disconnected! %%connect again!")
+            except Exception as e:
                 self.displayMessage("Error: message failed to send!")
+                print(repr(e))
 
             print(message)
             self.entryBox.delete(0,len(self.entryBox.get()))

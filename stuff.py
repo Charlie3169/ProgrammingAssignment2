@@ -1,5 +1,6 @@
 # This file defines and implements Group and Message classes.
 import datetime
+import socket
 from collections import deque
 
 class Message:
@@ -15,7 +16,7 @@ class Message:
 class Group:
     def __init__(self) -> None:
         self.current_messages: dict[int, Message] = dict()
-        self.users: list[str] = list()
+        self.users: dict[socket.socket, str] = dict()
 
     def add_user(self, name: str) -> None:
         self.users.append(name)
