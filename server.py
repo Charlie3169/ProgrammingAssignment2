@@ -60,6 +60,18 @@ class BulletinServer:
         else:
             caller.sendall(bytes("You are not in the public group!", 'utf-8'))
 
+    def message(self, caller: socket.socket, id: int):
+        if caller not in self.group.users.keys():
+            caller.sendall(bytes("You are not in the public group!", 'utf-8'))
+            return
+        if id < 0 or id >= len(self.group.current_messages):
+            caller.sendall(bytes("Invalid ID! Most recent message is ID#{0}".format(len(self.group.current_messages)-1), 'utf-8'))
+            return
+        
+        msg: Message = self.group.current_messages[id]
+
+        caller.sendall(bytes(msg))
+
     def _process_command(self, client: socket.socket, input: str) -> None:
         if(input.startswith('%')):
             commands = input.split(" ")            

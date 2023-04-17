@@ -10,12 +10,16 @@ class Message:
         self.subject = subject
         self.contents = contents
 
-    def display(self) -> str:
+    def __str__(self) -> str:
         return "{0} {1} {2} {3}".format(self.id, self.sender, self.postdate, self.subject)
+    
+    def __bytes__(self) -> bytes:
+        return bytes(str(self), 'utf-8')
+    
 
 class Group:
     def __init__(self) -> None:
-        self.current_messages: dict[int, Message] = dict()
+        self.current_messages: list[Message] = list()
         self.users: dict[socket.socket, str] = dict()
 
     def add_user(self, name: str) -> None:
@@ -25,7 +29,7 @@ class Group:
         self.users.remove(name)
 
     def add_message(self, msg: Message) -> None:
-        self.current_messages[msg.id] = msg
+        self.current_messages.append(msg)
     
 
     pass
