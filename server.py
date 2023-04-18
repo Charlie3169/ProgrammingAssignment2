@@ -209,6 +209,5 @@ class BulletinServer:
                 print(repr(e))
 
 if __name__ == "__main__":
-    print(re.findall('"([^"]*)"', '%post "Fuck Women." "Does anyone else here fucking hate women?"'))
     b = BulletinServer()
     b.serve_forever()
