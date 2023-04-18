@@ -90,6 +90,9 @@ class BulletinClientApp(Tk):
                     self._create_socket(address=(address, port))
                 else: # Otherwise, tell the user that they aren't connected.
                     self.displayMessage("Error: You aren't connected!")
+
+                self.displayMessage(">> " + message)
+                self.entryBox.delete(0,len(self.entryBox.get()))
                 return
             try:
                 self.displayMessage(">> " + message)
@@ -103,43 +106,6 @@ class BulletinClientApp(Tk):
 
             print(message)
             self.entryBox.delete(0,len(self.entryBox.get()))
-
-    def commands(self, input):
-        if(input.startswith('%')):
-            commands = input.split(" ")            
-            match commands[0][1:]: #Removes %, code was ugly otherwise
-                case 'connect':
-                    self.connect(self, commands[1], commands[2])
-                case 'join':
-                    self.join(self, commands[1])
-                case 'post':
-                     #Needs some extra stuff to parse correctly
-                    subject = ""
-                    body = ""                    
-                    self.post(self, subject, body)
-                case 'users':
-                    self.users(self)
-                case 'leave':
-                    self.leave(self)
-                case 'message':
-                    self.message(self, commands[1])
-                case 'exit':
-                    self.exit(self)
-                case 'groups':
-                    self.groups(self)
-                case 'groupjoin':
-                    self.groupjoin(self, commands[1])
-                case 'grouppost':
-                    #Needs some extra stuff to parse correctly
-                    groupSubject = ""
-                    groupBody = "" 
-                    self.grouppost(self, commands[1], groupSubject, groupBody)
-                case 'groupusers':
-                    self.groupusers(self, commands[1])
-                case 'groupleave':
-                    self.groupleave(self, commands[1])
-                case 'groupmessage':
-                    self.groupmessage(self, commands[1], commands[2])
     
     def connect(self, address, portNumber):
         print(1)
