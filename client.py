@@ -92,6 +92,7 @@ class BulletinClientApp(Tk):
                     self.displayMessage("Error: You aren't connected!")
                 return
             try:
+                self.displayMessage(">> " + message)
                 self.sender.send(bytes(message,'utf-8')) # Don't need a protocol, just make the server interpret commands.
             except ConnectionResetError as e:
                 self.sender = None
