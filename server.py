@@ -83,11 +83,17 @@ class BulletinServer:
         
         msg: Message = group.current_messages[id]
 
+        caller.sendall(bytes("{0} - {1}".format(msg.sender, msg.postdate.strftime("%m/%d/%y %H:%M")), 'utf-8'))
+        time.sleep(0.0001)
         caller.sendall(bytes("{0}: {1}".format(msg.subject, msg.contents), 'utf-8'))
     
     def exit(self, caller: socket.socket):
         if caller in self.group.users.keys():
             self.group.users.pop(caller)
+
+        for group in self.private_groups:
+            if caller in group.users.keys():
+                group.users.pop(caller)
         
         caller.close()
     
@@ -185,7 +191,7 @@ class BulletinServer:
                     if len(args) == 1:
                         self.message(group=self.get_group_by_name(args[0]), caller=client, id=idstring)
                     else:
-                        self.message(group=self.get_group_by_name(int(commands[1][0])), caller=client, id=idstring)
+                        self.message(group=self.get_group_by_name(commands[1]), caller=client, id=idstring)
                     
     def serve_forever(self):
         while True:

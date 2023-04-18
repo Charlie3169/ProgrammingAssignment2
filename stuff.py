@@ -11,7 +11,7 @@ class Message:
         self.contents = contents
 
     def __str__(self) -> str:
-        return "{0} {1} {2}".format(self.sender, self.postdate.strftime("%d/%m/%y %H:%M"), self.subject)
+        return "{0} {1} {2}".format(self.sender, self.postdate.strftime("%m/%d/%y %H:%M"), self.subject)
     
     def __bytes__(self) -> bytes:
         return bytes(str(self), 'utf-8')
